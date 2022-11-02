@@ -101,14 +101,16 @@ def handle_photo():
     file_list = list_img_file(src_dir)
     list_info = []
     file_list.sort(key=lambda x: x.split('_')[0])   # 按照日期排序
+    year_list = []
     for i in range(len(file_list)):
         filename = file_list[i]
         date_str, info = filename.split("_")
         info, _ = info.split(".")
         date = datetime.strptime(date_str, "%Y-%m-%d")
-        year_month = date_str[0:7]            
+        year_month = date_str[0:7] 
+        year = date_str[0:4]            
         if i == 0:  # 处理第一个文件
-            new_dict = {"date": year_month, "arr":{'year': date.year,
+            new_dict = {"date": year, "arr":{'year': date.year,
                                                                    'month': date.month,
                                                                    'link': [filename],
                                                                    'text': [info],
@@ -116,8 +118,9 @@ def handle_photo():
                                                                    }
                                         } 
             list_info.append(new_dict)
-        elif year_month != list_info[-1]['date']:  # 不是最后的一个日期，就新建一个dict
-            new_dict = {"date": year_month, "arr":{'year': date.year,
+            year_list.append(year)
+        elif year not in year_list:  # 不是最后的一个日期，就新建一个dict
+            new_dict = {"date": year, "arr":{'year': date.year,
                                                    'month': date.month,
                                                    'link': [filename],
                                                    'text': [info],
@@ -125,6 +128,7 @@ def handle_photo():
                                                    }
                         }
             list_info.append(new_dict)
+            year_list.append(year)
         else:  # 同一个日期
             list_info[-1]['arr']['link'].append(filename)
             list_info[-1]['arr']['text'].append(info)
